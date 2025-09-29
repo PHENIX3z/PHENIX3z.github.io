@@ -31,8 +31,6 @@
             font-size: 0.95rem;
             line-height: 1.5;
             transition: border-color 0.3s, box-shadow 0.3s;
-            /* Ensure it is always full width within its container */
-            width: 100%; 
         }
         .analysis-output {
             white-space: pre-wrap;
@@ -61,10 +59,8 @@
         </header>
 
         <section class="mb-10">
-            <!-- The 'block' class is already present, ensuring it forces stacking -->
             <label for="code-input" class="block text-xl font-semibold text-gray-700 mb-3">Input Code Snippet</label>
-            
-            <!-- Input area with new rounded corners and focus style. Explicitly setting w-full here for safety. -->
+            <!-- Input area with new rounded corners and focus style -->
             <textarea id="code-input" class="code-area w-full p-5 border-3 border-gray-300 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-200 transition duration-300" placeholder="e.g., def factorial(n): ..."></textarea>
             
             <!-- Updated button styling with strong shadow and transition -->
@@ -99,9 +95,7 @@
 
     <script type="module">
         // Gemini API Configuration
-        // NOTE: The issue with the 403 API error (from your first image) is related to how the environment provides the API key.
-        // We will stick to the mandated format here, as the environment should fix the injection issue itself.
-        const apiKey = ""; 
+        const apiKey = ""; // Canvas will provide this key at runtime
         const modelName = 'gemini-2.5-flash-preview-05-20';
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
 
