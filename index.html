@@ -6,92 +6,74 @@
     <title>Python Code Analyzer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Import Inter for general text and JetBrains Mono for code */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=JetBrains+Mono:wght@400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
         body {
-            /* Using a very soft blue-gray background */
             font-family: 'Inter', sans-serif;
-            background-color: #f0f4f8; 
+            background-color: #f7f9fc;
         }
         .container-card {
             max-width: 900px;
-            /* Responsive margin: less margin on small screens */
-            margin: 1.5rem auto;
-            
-            /* Padding is now handled by responsive Tailwind classes in the HTML div below */
+            margin: 2rem auto;
+            padding: 2rem;
             background: #ffffff;
-            border-radius: 1.5rem; /* More rounded */
-            box-shadow: 0 20px 40px rgba(45, 55, 72, 0.1); /* Deeper, softer shadow */
-            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
             min-height: 80vh;
         }
         .code-area {
             min-height: 250px;
-            font-family: 'JetBrains Mono', monospace; /* Dedicated font for code input */
-            font-size: 0.95rem;
-            line-height: 1.5;
-            transition: border-color 0.3s, box-shadow 0.3s;
-            /* Ensure it is always full width within its container */
-            width: 100%; 
+            font-family: monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
         }
         .analysis-output {
             white-space: pre-wrap;
             word-wrap: break-word;
         }
-        /* Custom style for the dark code block output */
-        .code-output-pre {
-            font-family: 'JetBrains Mono', monospace;
-            background-color: #2d2d2d; /* Dark theme for code */
-            color: #f8f8f2; /* Light text */
-            border-radius: 0.75rem;
-            padding: 1.5rem;
-            overflow-x: auto; /* Ensures horizontal scrolling on small screens if needed */
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        .shimmer-bg {
+            background: #e0e0e0;
+            background-image: linear-gradient(to right, #e0eeef 0%, #f6f6f6 20%, #e0e0e0 40%, #e0e0e0 100%);
+            background-repeat: no-repeat;
+            animation: shimmer 1.5s infinite linear;
+        }
+        @keyframes shimmer {
+            0% { background-position: -468px 0; }
+            100% { background-position: 468px 0; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Added responsive padding (p-6 on mobile, p-10 on small screens, p-12 on medium screens) -->
-    <div class="container-card p-6 sm:p-10 md:p-12">
-        <header class="text-center mb-10">
-            <!-- Header text scales down from 5xl to 4xl on mobile -->
-            <h1 class="text-4xl sm:text-5xl font-extrabold text-purple-700 mb-3 tracking-tight">Code <span class="text-cyan-500">Analyzer</span></h1>
-            <p class="text-lg text-gray-500">Paste your code to instantly get a summary, language detection, and logic breakdown.</p>
+    <div class="container-card">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-2">Code Logic Analyzer</h1>
+            <p class="text-lg text-gray-500">Input your Python code for automated logic summary.</p>
         </header>
 
-        <section class="mb-10">
-            <!-- The 'block' class is already present, ensuring it forces stacking -->
-            <label for="code-input" class="block text-xl font-semibold text-gray-700 mb-3">Input Code Snippet</label>
-            
-            <!-- Input area with new rounded corners and focus style. Explicitly setting w-full here for safety. -->
-            <textarea id="code-input" class="code-area w-full p-5 border-3 border-gray-300 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-200 transition duration-300" placeholder="e.g., def factorial(n): ..."></textarea>
-            
-            <!-- Updated button styling with strong shadow and transition -->
-            <button id="analyze-button" onclick="analyzeCode()" class="mt-6 w-full md:w-64 px-8 py-4 bg-purple-600 text-white font-extrabold text-lg rounded-xl shadow-xl hover:bg-purple-700 transition duration-300 transform hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-purple-400 disabled:bg-purple-400 disabled:cursor-not-allowed">
+        <section class="mb-8">
+            <label for="code-input" class="block text-lg font-semibold text-gray-700 mb-2">Paste Your Code Snippet (Python)</label>
+            <textarea id="code-input" class="code-area w-full p-4 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 transition duration-150" placeholder="e.g., def factorial(n): ..."></textarea>
+            <button id="analyze-button" onclick="analyzeCode()" class="mt-4 w-full md:w-auto px-6 py-3 bg-indigo-600 text-white font-bold rounded-lg shadow-lg hover:bg-indigo-700 transition duration-300 transform hover:scale-[1.01] focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50 disabled:bg-indigo-400 disabled:cursor-not-allowed">
                 Analyze Code
             </button>
         </section>
 
-        <section id="results-section" class="pt-10 border-t border-gray-200">
-            <!-- Results header text scales down from 3xl to 2xl on mobile -->
-            <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">Analysis Results</h2>
+        <section id="results-section" class="pt-8 border-t border-gray-200">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Analysis Results</h2>
 
-            <!-- Updated Loading Indicator style with Purple theme -->
-            <div id="loading-indicator" class="hidden flex items-center justify-center space-x-4 p-8 bg-purple-50 rounded-xl border border-purple-200">
-                <svg class="animate-spin h-6 w-6 text-purple-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <div id="loading-indicator" class="hidden flex items-center justify-center space-x-3 p-6 bg-yellow-50 rounded-lg border border-yellow-200">
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-yellow-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                <span class="text-xl text-purple-700 font-semibold">Analyzing Code Structure...</span>
+                <span class="text-lg text-yellow-700 font-medium">Analyzing... This might take a moment.</span>
             </div>
 
-            <!-- Error Message style updated to red/darker shade -->
-            <div id="error-message" class="hidden p-5 bg-red-100 border-l-4 border-red-500 text-red-800 rounded-lg" role="alert">
-                <span class="font-bold">Analysis Failed:</span> <span id="error-text"></span>
+            <div id="error-message" class="hidden p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg" role="alert">
+                <span class="font-semibold">Error:</span> <span id="error-text"></span>
             </div>
 
-            <div id="analysis-output-container" class="space-y-8">
+            <div id="analysis-output-container" class="space-y-6">
                 <!-- Analysis Output Sections will be rendered here -->
             </div>
         </section>
@@ -99,9 +81,7 @@
 
     <script type="module">
         // Gemini API Configuration
-        // NOTE: The issue with the 403 API error (from your first image) is related to how the environment provides the API key.
-        // We will stick to the mandated format here, as the environment should fix the injection issue itself.
-        const apiKey = ""; 
+        const apiKey = ""; // Canvas will provide this key at runtime
         const modelName = 'gemini-2.5-flash-preview-05-20';
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
 
@@ -124,22 +104,20 @@
          */
         function renderOutputBlock(title, content, isCode = false) {
             const block = document.createElement('div');
-            // Enhanced block styling with shadow and hover effect
-            block.className = 'p-6 bg-white border border-gray-100 rounded-xl shadow-lg hover:shadow-xl transition duration-300';
+            block.className = 'p-5 bg-white border border-gray-200 rounded-xl shadow-sm';
 
             const titleElement = document.createElement('h3');
-            // Primary color for titles and a bottom separator
-            titleElement.className = 'text-2xl font-bold mb-4 text-purple-600 border-b pb-2 border-purple-100';
+            titleElement.className = 'text-xl font-semibold mb-3 text-indigo-700';
             titleElement.textContent = title;
 
             const contentElement = document.createElement('div');
-            contentElement.className = 'analysis-output text-gray-800 leading-relaxed';
+            contentElement.className = 'analysis-output text-gray-700';
             
             if (isCode) {
-                // Use the new custom class for the dark code block
+                // Remove the markdown code block markers for clean display
                 const cleanContent = content.replace(/^```[a-z]*\n|```$/g, '').trim();
                 const codePre = document.createElement('pre');
-                codePre.className = 'code-output-pre'; /* Custom class for dark theme defined in <style> */
+                codePre.className = 'p-4 bg-gray-900 text-green-300 rounded-lg overflow-x-auto text-sm';
                 const code = document.createElement('code');
                 code.textContent = cleanContent;
                 codePre.appendChild(code);
@@ -207,8 +185,7 @@
             // UI updates
             isAnalyzing = true;
             analyzeButton.disabled = true;
-            // Update button content to show spinner
-            analyzeButton.innerHTML = '<span class="flex items-center justify-center"><svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Analyzing...</span>';
+            analyzeButton.textContent = 'Analyzing...';
             loadingIndicator.classList.remove('hidden');
             outputContainer.innerHTML = '';
             errorContainer.classList.add('hidden');
@@ -263,7 +240,7 @@
                 // Reset UI
                 isAnalyzing = false;
                 analyzeButton.disabled = false;
-                analyzeButton.innerHTML = 'Analyze Code';
+                analyzeButton.textContent = 'Analyze Code';
                 loadingIndicator.classList.add('hidden');
             }
         }
