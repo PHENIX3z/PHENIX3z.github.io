@@ -3,266 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Python Code Analyzer</title>
+    <title>Pro Python Code Analyzer</title>
+    <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        /* Custom styles for code editor look and feel */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f7f9fc;
+            background-color: #0d1117; /* Dark background similar to code editors */
+            color: #c9d1d9; /* Light text color */
         }
-        .container-card {
-            max-width: 900px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background: #ffffff;
-            border-radius: 1rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-            min-height: 80vh;
+        /* Custom scrollbar for the textarea and results area */
+        .code-area::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
         }
-        .code-area {
-            min-height: 250px;
-            font-family: monospace;
-            font-size: 0.9rem;
-            line-height: 1.4;
+        .code-area::-webkit-scrollbar-thumb {
+            background-color: #30363d;
+            border-radius: 10px;
         }
-        .analysis-output {
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-        .shimmer-bg {
-            background: #e0e0e0;
-            background-image: linear-gradient(to right, #e0eeef 0%, #f6f6f6 20%, #e0e0e0 40%, #e0e0e0 100%);
-            background-repeat: no-repeat;
-            animation: shimmer 1.5s infinite linear;
-        }
-        @keyframes shimmer {
-            0% { background-position: -468px 0; }
-            100% { background-position: 468px 0; }
+        .code-area::-webkit-scrollbar-track {
+            background: #161b22;
         }
     </style>
 </head>
-<body>
+<body class="min-h-screen p-4 sm:p-8">
 
-    <div class="container-card">
-        <header class="text-center mb-8">
-            <h1 class="text-4xl font-extrabold text-gray-900 mb-2">Code Logic Analyzer</h1>
-            <p class="text-lg text-gray-500">Input your Python code for automated logic summary.</p>
+    <div id="app" class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <header class="text-center py-6 border-b border-gray-700 mb-8">
+            <h1 class="text-4xl font-extrabold text-teal-400 tracking-tight">Code <span class="text-white">Audit</span></h1>
+            <p class="mt-2 text-gray-400 text-lg">Harnessing LLM insights for robust Python code analysis.</p>
         </header>
 
-        <section class="mb-8">
-            <label for="code-input" class="block text-lg font-semibold text-gray-700 mb-2">Paste Your Code Snippet (Python)</label>
-            <textarea id="code-input" class="code-area w-full p-4 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 transition duration-150" placeholder="e.g., def factorial(n): ..."></textarea>
-            <button id="analyze-button" onclick="analyzeCode()" class="mt-4 w-full md:w-auto px-6 py-3 bg-indigo-600 text-white font-bold rounded-lg shadow-lg hover:bg-indigo-700 transition duration-300 transform hover:scale-[1.01] focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50 disabled:bg-indigo-400 disabled:cursor-not-allowed">
-                Analyze Code
-            </button>
-        </section>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-        <section id="results-section" class="pt-8 border-t border-gray-200">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Analysis Results</h2>
+            <!-- Code Input Panel -->
+            <div class="bg-[#161b22] p-6 rounded-xl shadow-2xl transition-all duration-300 hover:shadow-teal-500/30">
+                <h2 class="text-2xl font-semibold mb-4 text-white flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-2 text-yellow-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                    Input Python Code
+                </h2>
+                <!-- Removed pre-filled code -->
+                <textarea id="pythonCodeInput"
+                          class="code-area w-full h-80 p-4 bg-[#0d1117] border border-gray-600 rounded-lg text-sm text-yellow-400 resize-none focus:ring-2 focus:ring-teal-500 outline-none placeholder-gray-500"
+                          placeholder="Paste your Python code here to begin analysis..."
+                          spellcheck="false"></textarea>
 
-            <div id="loading-indicator" class="hidden flex items-center justify-center space-x-3 p-6 bg-yellow-50 rounded-lg border border-yellow-200">
-                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-yellow-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                <span class="text-lg text-yellow-700 font-medium">Analyzing... This might take a moment.</span>
+                <!-- Removed onclick handler -->
+                <button id="analyzeButton"
+                        class="mt-4 w-full px-6 py-3 bg-teal-600 hover:bg-teal-500 text-white font-bold rounded-lg shadow-lg transition duration-200 transform hover:scale-[1.01] focus:outline-none focus:ring-4 focus:ring-teal-500/50 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" id="analyzeIcon" class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.74 1.74"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                    Analyze Code (Connect API)
+                </button>
             </div>
 
-            <div id="error-message" class="hidden p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg" role="alert">
-                <span class="font-semibold">Error:</span> <span id="error-text"></span>
-            </div>
+            <!-- Analysis Output Panel -->
+            <div class="bg-[#161b22] p-6 rounded-xl shadow-2xl transition-all duration-300 hover:shadow-purple-500/30">
+                <h2 class="text-2xl font-semibold mb-4 text-white flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-2 text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 17.5l-3-3"></path><path d="M22 11c-2.76 0-5 2.24-5 5s2.24 5 5 5"></path><path d="M2 12h5l2.2-3 2.6 6 1.2-3 2 3"></path></svg>
+                    Analysis & Critique
+                </h2>
+                <div id="resultsOutput" class="code-area w-full h-80 p-4 bg-[#0d1117] border border-gray-600 rounded-lg text-sm leading-relaxed overflow-y-auto">
+                    <p class="text-gray-500">The analysis results from your integrated backend service will be displayed here.</p>
+                </div>
 
-            <div id="analysis-output-container" class="space-y-6">
-                <!-- Analysis Output Sections will be rendered here -->
+                <!-- Source Attribution Area (important for LLM generated content) -->
+                <div id="sourcesArea" class="mt-4 text-xs text-gray-500 hidden">
+                    <p class="font-semibold mb-1 text-gray-400">Grounding Sources:</p>
+                    <ul id="sourcesList" class="list-disc list-inside space-y-1">
+                        <!-- Sources will be injected here -->
+                    </ul>
+                </div>
+
             </div>
-        </section>
+        </div>
+
+        <!-- Call to Action/Information Footer -->
+        <footer class="mt-12 text-center text-gray-500 text-sm border-t border-gray-700 pt-6">
+            <p>Static analysis helps catch errors early, improving code quality and maintainability. </p>
+            <p class="mt-1">&copy; 2024 CodeAudit. All rights reserved.</p>
+        </footer>
     </div>
 
-    <script type="module">
-        // Gemini API Configuration
-        const apiKey = ""; // Canvas will provide this key at runtime
-        const modelName = 'gemini-2.5-flash-preview-05-20';
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+    <script>
+        // Minimal JavaScript for the model. Add your fetch logic and API connection here.
+        document.getElementById('analyzeButton').addEventListener('click', () => {
+            const code = document.getElementById('pythonCodeInput').value.trim();
+            const outputElement = document.getElementById('resultsOutput');
+            const button = document.getElementById('analyzeButton');
 
-        // DOM Elements
-        const codeInput = document.getElementById('code-input');
-        const analyzeButton = document.getElementById('analyze-button');
-        const loadingIndicator = document.getElementById('loading-indicator');
-        const errorContainer = document.getElementById('error-message');
-        const errorText = document.getElementById('error-text');
-        const outputContainer = document.getElementById('analysis-output-container');
-
-        // State for managing button and loading
-        let isAnalyzing = false;
-
-        /**
-         * Renders a key-value pair display block.
-         * @param {string} title The title of the section (e.g., "Logic Summary").
-         * @param {string} content The content to display.
-         * @param {boolean} isCode Whether the content is a code block (for specific styling).
-         */
-        function renderOutputBlock(title, content, isCode = false) {
-            const block = document.createElement('div');
-            block.className = 'p-5 bg-white border border-gray-200 rounded-xl shadow-sm';
-
-            const titleElement = document.createElement('h3');
-            titleElement.className = 'text-xl font-semibold mb-3 text-indigo-700';
-            titleElement.textContent = title;
-
-            const contentElement = document.createElement('div');
-            contentElement.className = 'analysis-output text-gray-700';
-            
-            if (isCode) {
-                // Remove the markdown code block markers for clean display
-                const cleanContent = content.replace(/^```[a-z]*\n|```$/g, '').trim();
-                const codePre = document.createElement('pre');
-                codePre.className = 'p-4 bg-gray-900 text-green-300 rounded-lg overflow-x-auto text-sm';
-                const code = document.createElement('code');
-                code.textContent = cleanContent;
-                codePre.appendChild(code);
-                contentElement.appendChild(codePre);
-            } else {
-                contentElement.innerHTML = content.replace(/\n/g, '<br>');
-            }
-
-            block.appendChild(titleElement);
-            block.appendChild(contentElement);
-            outputContainer.appendChild(block);
-        }
-
-        /**
-         * Handles the API call with exponential backoff.
-         * @param {object} payload The request payload.
-         * @param {number} maxRetries Maximum number of retries.
-         * @param {number} delay Initial delay in ms.
-         */
-        async function fetchWithBackoff(payload, maxRetries = 5, delay = 1000) {
-            for (let i = 0; i < maxRetries; i++) {
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (response.status === 429 && i < maxRetries - 1) {
-                        // Too Many Requests, retry after delay
-                        await new Promise(resolve => setTimeout(resolve, delay));
-                        delay *= 2;
-                        continue;
-                    }
-
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(`API returned status ${response.status}: ${errorData.error?.message || 'Unknown error'}`);
-                    }
-
-                    return response;
-                } catch (error) {
-                    if (i === maxRetries - 1) {
-                        throw error;
-                    }
-                    await new Promise(resolve => setTimeout(resolve, delay));
-                    delay *= 2;
-                }
-            }
-        }
-
-
-        /**
-         * Main function to analyze the code using Gemini API.
-         */
-        window.analyzeCode = async function() {
-            if (isAnalyzing) return;
-
-            const code = codeInput.value.trim();
             if (!code) {
-                showError("Please enter some code to analyze.");
+                outputElement.innerHTML = '<p class="text-red-400">Please enter some Python code before analysis.</p>';
                 return;
             }
 
-            // UI updates
-            isAnalyzing = true;
-            analyzeButton.disabled = true;
-            analyzeButton.textContent = 'Analyzing...';
-            loadingIndicator.classList.remove('hidden');
-            outputContainer.innerHTML = '';
-            errorContainer.classList.add('hidden');
-
-            const systemPrompt = "You are a world-class code analyst. Your task is to analyze the provided code snippet, confirm the language, provide a concise summary of its logic, and return the response in the specified JSON format.";
-            const userQuery = `Analyze the following code snippet and provide a summary of its logic and the original code:\n\n---\n${code}\n---`;
-
-            const payload = {
-                contents: [{ parts: [{ text: userQuery }] }],
-                systemInstruction: { parts: [{ text: systemPrompt }] },
-                generationConfig: {
-                    responseMimeType: "application/json",
-                    responseSchema: {
-                        type: "OBJECT",
-                        properties: {
-                            "logic_summary": { "type": "STRING", "description": "A concise explanation of what the provided code does." },
-                            "language_detected": { "type": "STRING", "description": "The programming language of the snippet, e.g., 'Python'." },
-                            "analyzed_code": { "type": "STRING", "description": "The original code snippet, ensuring it is wrapped in markdown code block format (e.g., ```python\\n...\\n```)." }
-                        },
-                        required: ["logic_summary", "language_detected", "analyzed_code"]
-                    }
-                }
-            };
-
-            try {
-                const response = await fetchWithBackoff(payload);
-                const result = await response.json();
-
-                const candidate = result.candidates?.[0];
-
-                if (!candidate || !candidate.content?.parts?.[0]?.text) {
-                    throw new Error("Analysis failed: Invalid response structure from the API.");
-                }
-                
-                const jsonText = candidate.content.parts[0].text;
-                const analysisData = JSON.parse(jsonText);
-
-                // Check for required fields
-                if (!analysisData.logic_summary || !analysisData.language_detected || !analysisData.analyzed_code) {
-                     throw new Error("Analysis failed: Missing required fields in the JSON response.");
-                }
-
-                // Render the results
-                renderOutputBlock('Language Detected', analysisData.language_detected);
-                renderOutputBlock('Logic Summary', analysisData.logic_summary);
-                renderOutputBlock('Analyzed Code', analysisData.analyzed_code, true);
-
-            } catch (error) {
-                console.error("Analysis Error:", error);
-                showError(error.message || "An unknown error occurred during code analysis.");
-            } finally {
-                // Reset UI
-                isAnalyzing = false;
-                analyzeButton.disabled = false;
-                analyzeButton.textContent = 'Analyze Code';
-                loadingIndicator.classList.add('hidden');
-            }
-        }
-
-        function showError(message) {
-            errorText.textContent = message;
-            errorContainer.classList.remove('hidden');
-        }
-
-        // Add a simple default example code
-        window.onload = () => {
-             codeInput.value = `
-def is_prime(n):
-    if n <= 1:
-        return False
-    for i in range(2, int(n**0.5) + 1):
-        if n % i == 0:
-            return False
-    return True
-             `.trim();
-        };
-
+            // Placeholder for your actual API call
+            button.innerHTML = 'Processing...';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                outputElement.innerHTML = `<p class="text-yellow-400">Analysis functionality is currently disabled in the client-side model. Paste your API call logic here to process the code: </p><pre class="text-gray-300 mt-2 p-2 bg-[#2d323b] rounded-lg"><code>${code}</code></pre>`;
+                button.innerHTML = 'Analyze Code (Connect API)';
+                button.disabled = false;
+            }, 1500);
+        });
     </script>
+
 </body>
 </html>
