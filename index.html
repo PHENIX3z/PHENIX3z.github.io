@@ -2,113 +2,177 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Python Code Analyzer</title>
-    <!-- Load Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Ptyhon Code Analyzer</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Poppins:wght@600&display=swap" rel="stylesheet">
     <style>
-        /* Custom styles for code editor look and feel */
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0d1117; /* Dark background similar to code editors */
-            color: #c9d1d9; /* Light text color */
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(120deg, #4158D0 0%, #C850C0 60%, #FFCC70 100%);
+            font-family: 'Poppins', Arial, sans-serif;
+            color: #222;
         }
-        /* Custom scrollbar for the textarea and results area */
-        .code-area::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+        header {
+            padding: 30px;
+            text-align: center;
+            animation: fadeInDown 1s ease;
         }
-        .code-area::-webkit-scrollbar-thumb {
-            background-color: #30363d;
-            border-radius: 10px;
+        header h1 {
+            font-size: 2.6rem;
+            letter-spacing: 2px;
+            color: #fff;
+            text-shadow: 1px 4px 18px #9157b0;
         }
-        .code-area::-webkit-scrollbar-track {
-            background: #161b22;
+        header p {
+            color: #f0f0f0;
+            font-size: 1.1rem;
+            margin-top: 10px;
+            opacity: 0.8;
+        }
+
+        .container {
+            background: rgba(255,255,255,0.98);
+            border-radius: 1rem;
+            box-shadow: 0 0 32px #c850c09e;
+            width: 90%;
+            max-width: 480px;
+            margin: 40px auto auto;
+            padding: 34px 30px 23px 30px;
+            animation: popUp 0.9s cubic-bezier(0.25,1.7,0.4,1.08);
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.08rem;
+            padding: 10px 12px;
+            border-radius: 8px;
+            outline: none;
+            border: 1.5px solid #d7d7db;
+            resize: vertical;
+            background: #f8f6fb;
+            margin-bottom: 18px;
+            transition: box-shadow 0.3s;
+        }
+        textarea:focus {
+            box-shadow: 0 0 6px #c850c063;
+        }
+
+        .analyze-btn {
+            background: linear-gradient(90deg, #C850C0, #4158D0);
+            color: #fff;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 24px;
+            font-size: 1.09rem;
+            cursor: pointer;
+            box-shadow: 0 0 8px #d0abf7bd;
+            transition: transform 0.13s;
+        }
+        .analyze-btn:active {
+            transform: scale(0.97);
+        }
+
+        .example-section {
+            margin-top: 30px;
+            animation: popUp 1.4s 0.2s backwards;
+        }
+        .example-section h2 {
+            font-size: 1.25rem;
+            margin-bottom: 8px;
+        }
+        pre {
+            background: #2b2737;
+            color: #e9e8f2;
+            font-family: 'JetBrains Mono', monospace;
+            border-radius: 9px;
+            padding: 13px 14px;
+            font-size: 1.01rem;
+            margin: 0 0 10px 0;
+            overflow-x: auto;
+        }
+        .logic-box {
+            background: linear-gradient(90deg, #fdeffb 70%, #def8ff 100%);
+            border-radius: 8px;
+            margin-top: 18px;
+            padding: 16px;
+            font-size: 1.08rem;
+            font-family: 'Poppins', Arial, sans-serif;
+            min-height: 38px;
+            box-shadow: 0 0 10px #c850c02a;
+            animation: logicFade 1.2s;
+        }
+        @keyframes fadeInDown {
+            0% { opacity: 0; transform: translateY(-45px);}
+            100% { opacity: 1; transform: none;}
+        }
+        @keyframes popUp {
+            0% { opacity: 0; transform: scale(0.6);}
+            100% { opacity: 1; transform: scale(1);}
+        }
+        @keyframes logicFade {
+            0% { opacity: 0; transform: translateY(25px);}
+            100% { opacity: 1; transform: none;}
         }
     </style>
 </head>
-<body class="min-h-screen p-4 sm:p-8">
-
-    <div id="app" class="max-w-6xl mx-auto">
-        <!-- Header -->
-        <header class="text-center py-6 border-b border-gray-700 mb-8">
-            <h1 class="text-4xl font-extrabold text-teal-400 tracking-tight">Code <span class="text-white">Audit</span></h1>
-            <p class="mt-2 text-gray-400 text-lg">Harnessing LLM insights for robust Python code analysis.</p>
-        </header>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
-            <!-- Code Input Panel -->
-            <div class="bg-[#161b22] p-6 rounded-xl shadow-2xl transition-all duration-300 hover:shadow-teal-500/30">
-                <h2 class="text-2xl font-semibold mb-4 text-white flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-2 text-yellow-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
-                    Input Python Code
-                </h2>
-                <!-- Removed pre-filled code -->
-                <textarea id="pythonCodeInput"
-                          class="code-area w-full h-80 p-4 bg-[#0d1117] border border-gray-600 rounded-lg text-sm text-yellow-400 resize-none focus:ring-2 focus:ring-teal-500 outline-none placeholder-gray-500"
-                          placeholder="Paste your Python code here to begin analysis..."
-                          spellcheck="false"></textarea>
-
-                <!-- Removed onclick handler -->
-                <button id="analyzeButton"
-                        class="mt-4 w-full px-6 py-3 bg-teal-600 hover:bg-teal-500 text-white font-bold rounded-lg shadow-lg transition duration-200 transform hover:scale-[1.01] focus:outline-none focus:ring-4 focus:ring-teal-500/50 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" id="analyzeIcon" class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.74 1.74"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                    Analyze Code (Connect API)
-                </button>
-            </div>
-
-            <!-- Analysis Output Panel -->
-            <div class="bg-[#161b22] p-6 rounded-xl shadow-2xl transition-all duration-300 hover:shadow-purple-500/30">
-                <h2 class="text-2xl font-semibold mb-4 text-white flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-2 text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 17.5l-3-3"></path><path d="M22 11c-2.76 0-5 2.24-5 5s2.24 5 5 5"></path><path d="M2 12h5l2.2-3 2.6 6 1.2-3 2 3"></path></svg>
-                    Analysis & Critique
-                </h2>
-                <div id="resultsOutput" class="code-area w-full h-80 p-4 bg-[#0d1117] border border-gray-600 rounded-lg text-sm leading-relaxed overflow-y-auto">
-                    <p class="text-gray-500">The analysis results from your integrated backend service will be displayed here.</p>
-                </div>
-
-                <!-- Source Attribution Area (important for LLM generated content) -->
-                <div id="sourcesArea" class="mt-4 text-xs text-gray-500 hidden">
-                    <p class="font-semibold mb-1 text-gray-400">Grounding Sources:</p>
-                    <ul id="sourcesList" class="list-disc list-inside space-y-1">
-                        <!-- Sources will be injected here -->
-                    </ul>
-                </div>
-
+<body>
+    <header>
+        <h1>Ptyhon Code Analyzer</h1>
+        <p>Paste a Python function below and get its logic explained instantly!</p>
+    </header>
+    <div class="container">
+        <form id="analyzerForm">
+            <label for="pythoncode" style="font-weight:500;">Python code:</label>
+            <textarea id="pythoncode" spellcheck="false" placeholder="Paste your Python function here"></textarea>
+            <button type="submit" class="analyze-btn">Analyze Logic</button>
+        </form>
+        <div class="logic-box" id="logicBox" style="display:none;"></div>
+        <div class="example-section">
+            <h2>Example: Prime Number Checker</h2>
+            <pre>
+def is_prime(n):
+    if n <= 1:
+        return False
+    for i in range(2, int(n**0.5)+1):
+        if n % i == 0:
+            return False
+    return True
+            </pre>
+            <div class="logic-box">
+                This function checks if a number <b>n</b> is prime.<br>
+                If <b>n</b> is less than or equal to 1, it returns False.<br>
+                Otherwise, it tests divisibility from 2 up to the square root of <b>n</b>.<br>
+                If any divisor is found, it returns False, otherwise it returns True.
             </div>
         </div>
-
-        <!-- Call to Action/Information Footer -->
-        <footer class="mt-12 text-center text-gray-500 text-sm border-t border-gray-700 pt-6">
-            <p>Static analysis helps catch errors early, improving code quality and maintainability. </p>
-            <p class="mt-1">&copy; 2024 CodeAudit. All rights reserved.</p>
-        </footer>
     </div>
-
     <script>
-        // Minimal JavaScript for the model. Add your fetch logic and API connection here.
-        document.getElementById('analyzeButton').addEventListener('click', () => {
-            const code = document.getElementById('pythonCodeInput').value.trim();
-            const outputElement = document.getElementById('resultsOutput');
-            const button = document.getElementById('analyzeButton');
+        const form = document.getElementById('analyzerForm');
+        const codeBox = document.getElementById('pythoncode');
+        const logicBox = document.getElementById('logicBox');
 
-            if (!code) {
-                outputElement.innerHTML = '<p class="text-red-400">Please enter some Python code before analysis.</p>';
-                return;
+        // Dummy static analyzer for demo
+        function analyzePythonCode(code) {
+            // Only demo: simple keyword detect for the example
+            if (code.includes('def is_prime')) {
+                return `This function checks if a number <b>n</b> is prime.<br>
+                If <b>n</b> is less than or equal to 1, it returns False.<br>
+                Otherwise, it tests divisibility from 2 up to the square root of <b>n</b>.<br>
+                If any divisor is found, it returns False, otherwise it returns True.`;
             }
-
-            // Placeholder for your actual API call
-            button.innerHTML = 'Processing...';
-            button.disabled = true;
-            
-            setTimeout(() => {
-                outputElement.innerHTML = `<p class="text-yellow-400">Analysis functionality is currently disabled in the client-side model. Paste your API call logic here to process the code: </p><pre class="text-gray-300 mt-2 p-2 bg-[#2d323b] rounded-lg"><code>${code}</code></pre>`;
-                button.innerHTML = 'Analyze Code (Connect API)';
-                button.disabled = false;
-            }, 1500);
-        });
+            if (code.trim() === "") return "Please enter Python code to get an explanation!";
+            return "Logic explanation for your code will appear here (static demo: add more sample code as needed for demo).";
+        }
+        form.onsubmit = function(e) {
+            e.preventDefault();
+            const userCode = codeBox.value.trim();
+            const logic = analyzePythonCode(userCode);
+            logicBox.innerHTML = logic;
+            logicBox.style.display = "block";
+        };
     </script>
-
 </body>
 </html>
